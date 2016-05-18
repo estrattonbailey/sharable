@@ -1,0 +1,27 @@
+{
+  "name": "social",
+  "version": "0.1.0",
+  "description": "A little social popup plugin in vanilla js.",
+  "main": "social.min.js",
+  "scripts": {
+    "start": "onchange 'src/index.js' -- npm run build",
+    "build": "umd social.js src/index.js social.js",
+    "package": "umd social.js src/index.js | uglifyjs > social.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/estrattonbailey/social.git"
+  },
+  "author": "estrattonbailey",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/estrattonbailey/social/issues"
+  },
+  "homepage": "https://github.com/estrattonbailey/social#readme",
+  "devDependencies": {
+    "onchange": "^2.4.0",
+    "uglify-js": "^2.6.2",
+    "umd": "^3.0.1"
+  }
+}
+
