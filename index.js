@@ -16,17 +16,17 @@ const networks = {
  * new object
  *
  * @param {object} target Root object
- * @param {object} merge Object to merge 
+ * @param {object} source Object to merge 
  *
  * @return {object} A *new* object with all props of the passed objects
  */
-const merge = (target, merge) => {
+const merge = (target, source) => {
   let result = {}
   let props = Object.keys(target)
 
   for (let i = 0; i < props.length; i++){
     let prop = props[i]
-    result[prop] = merge[prop] ? merge[prop] : target[prop]
+    result[prop] = source[prop] ? source[prop] : target[prop]
   }
 
   return result
@@ -59,8 +59,9 @@ const getMeta = () => {
   for (let i = 0; i < metaTags.length; i++){
     let attributes = [].slice.call(metaTags[i].attributes);
 
-    for (var i = 0; i < attributes.length; i++){
-      let attr = attributes[i]
+    for (let a = 0; a < attributes.length; a++){
+      let attr = attributes[a]
+
       /** 
        * If a Twitter or Open Graph tag 
        */
@@ -89,9 +90,9 @@ const getMeta = () => {
  * @return {object} Object with name of network and any optional override values
  */
 const parseLocalData = (target, attribute) => {
-  let raw = target.getAttribute(attribute).split(/\s/)
+  let raw = target.getAttribute(attribute).split(/\s{1}/)
   let network = raw[0]
-  let overrides = raw[1] ? JSON.parse(opts[1]) : null 
+  let overrides = raw[1] ? JSON.parse(raw[1]) : null 
 
   return {
     network,
@@ -105,20 +106,20 @@ const parseLocalData = (target, attribute) => {
  *
  * @return {string} The complete URL based on the template
  */
-function createURL(network, meta){
+const createURL = (network, meta) => {
   let params = networks[network].split(/\|/)
 
-  const replace = (string, value) => string.replace(/{{.*?}}/g, (str) => {
-    return encodeURI(value)
-  })
+  const replace = (string, value) => {
+    string.replace(/\{\{.*?\}\}/g, encodeURI(value))
+  }
 
   /**
    * Iterate over each query parameter 
    * in URL. If we have data, insert it.
    * If not, remove the query parameter.
    */
-  for (var i = 1; i < params.length; i++){
-    let type = params[i].split(/{{|}}/g)[1];
+  for (let i = 1; i < params.length; i++){
+    let type = params[i].split(/\{\{|\}\}/g)[1]
 
     if (meta[type]){
       params[i] = replace(params[i], meta[type])
@@ -134,16 +135,16 @@ function createURL(network, meta){
 /**
  * @param {object} config 
  */
-function Sharable(config){
+function Sharable(config = {}){
   const options = merge({
     selector: 'data-social'
   }, config)
 
   const meta = getMeta();
-  const targets = [].slice.call(document.querySelectorAll(`[${options.selector}]`));
+  const targets = [].slice.call(document.querySelectorAll(`[${options.selector}]`)) || []
 
   for (let i = 0; i < targets.length; i++){
-    let target = target[i]
+    let target = targets[i]
 
     target.onclick = (e) => {
       e.preventDefault()
@@ -156,3 +157,4 @@ function Sharable(config){
 }
 
 export default Sharable
+

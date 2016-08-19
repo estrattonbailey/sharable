@@ -1,4 +1,4 @@
-# Sharable [![npm](https://img.shields.io/npm/v/sharable.svg?maxAge=2592000)](https://www.npmjs.com/package/sharable)
+# Sharable (WIP, not working rn) [![npm](https://img.shields.io/npm/v/sharable.svg?maxAge=2592000)](https://www.npmjs.com/package/sharable)
 An easily configurable social share libary that uses the social data in your document's `head` by default.
 
 ## Install 
