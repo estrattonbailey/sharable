@@ -1,27 +1,46 @@
 {
-  "name": "social",
-  "version": "0.1.0",
-  "description": "A little social popup plugin in vanilla js.",
-  "main": "social.min.js",
+  "name": "sharable",
+  "version": "0.0.1",
+  "description": "An easily configurable social share libary that uses the social data in your document's head by default.",
+  "main": "dist/sharable.js",
   "scripts": {
-    "start": "onchange 'src/index.js' -- npm run build",
-    "build": "umd social.js src/index.js social.js",
-    "package": "umd social.js src/index.js | uglifyjs > social.min.js"
+    "package": "mkdir browser ; browserify index.js --standalone overunder > browser/overunder.js"
+  },
+  "browserify": {
+    "debug": true,
+    "cache": {},
+    "packageCache": {},
+    "extension": [
+      "js"
+    ],
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015",
+            "react"
+          ]
+        }
+      ]
+    ]
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/estrattonbailey/social.git"
+    "url": "git+ssh://git@github.com/estrattonbailey/sharable.git"
   },
   "author": "estrattonbailey",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/estrattonbailey/social/issues"
+    "url": "https://github.com/estrattonbailey/sharable/issues"
   },
-  "homepage": "https://github.com/estrattonbailey/social#readme",
+  "homepage": "https://github.com/estrattonbailey/sharable#readme",
   "devDependencies": {
-    "onchange": "^2.4.0",
-    "uglify-js": "^2.6.2",
-    "umd": "^3.0.1"
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.5.0",
+    "babelify": "^7.3.0",
+    "browserify": "^13.0.1",
+    "minifyify": "^7.3.3",
+    "watchify": "^3.7.0"
   }
 }
-
