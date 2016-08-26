@@ -148,15 +148,26 @@ function Sharable(config = {}){
     }
   })
 
+  /**
+   * Init
+   */
   bindLinks()
 
   return instance
 
+  /**
+   * Bind new links,
+   * fetch new data from head
+   */
   function update(){
     bindLinks()
     instance.meta = getMeta()
   }
 
+  /**
+   * Binds links with configured data-attribute selector,
+   * then removes the attribute to prevent rebinding
+   */
   function bindLinks(){
     const targets = [].slice.call(document.querySelectorAll(`[${options.selector}]`)) || []
 
@@ -165,7 +176,6 @@ function Sharable(config = {}){
     for (let i = 0; i < targets.length; i++){
       let target = targets[i]
       let {network, overrides} = parseLocalData(target, options.selector)
-      console.log(overrides)
       let url = createURL(network, merge(instance.meta, overrides))
 
       target.addEventListener('click', () => openPopup(url))
