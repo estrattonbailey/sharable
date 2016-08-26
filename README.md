@@ -25,10 +25,10 @@ Add social data to your `head` as normal.
 </head>
 <body>
 
-  <a href="#0" data-social="twitter">Twitter</div>
-  <a href="#0" data-social="facebook">Facebook</div>
-  <a href="#0" data-social="pinterest">Pinterest</div>
-  <a href="#0" data-social="tumblr">Tumblr</div>
+  <a href="#0" data-social="twitter">Twitter</a>
+  <a href="#0" data-social="facebook">Facebook</a>
+  <a href="#0" data-social="pinterest">Pinterest</a>
+  <a href="#0" data-social="tumblr">Tumblr</a>
 
 </body>
 </html>
@@ -36,21 +36,31 @@ Add social data to your `head` as normal.
 ```javascript
 import sharable from 'sharable'
 
-sharable({ selector: 'data-social' })
+const share = sharable({ selector: 'data-social' })
 ```
 
 ## Options 
-You can optionally pass extra data to individual links to override the default data from the `head`.
+You can optionally pass extra data to individual links via data attributes to override the default data from the `head`.
 ```html
-<a href="#0" data-social="twitter {"hashtags":"social,tech","via":"estrattonbailey"}">Twitter</div>
-<a href="#0" data-social="pinterest {"description":"Custom description!"}">Pinterest</div>
-<a href="#0" data-social="pinterest {"image":"custom_image_url"}">Pinterest</div>
+<a href="#0" 
+  data-social="tumblr"
+  data-description="Description for the tumblr post."
+  data-url="http://estrattonbailey.tumblr.com"
+  >
+  Tumblr
+</a>
+```
+
+## API
+#### sharable.update()
+Binds any new links and fetches fresh meta data from the `head`.
+```javascript
+share.update()
 ```
 
 ## TODO
 1. More networks (anyone care to contribute?)
 2. Tests
-3. API: update(), destroy()
 
 * * *
 

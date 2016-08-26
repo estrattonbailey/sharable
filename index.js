@@ -5,10 +5,10 @@
  * syntax i.e. {{value}}
  */
 const networks = {
-	pinterest: 'https://pinterest.com/pin/create/bookmarklet/?|media={{data-image}}|&url={{data-url}}|&description={{data-description}}',
-	facebook: 'http://www.facebook.com/sharer.php?|u={{data-url}}',
-  twitter: 'https://twitter.com/share?|url={{data-url}}|&text={{data-description}}|&via={{data-via}}|&hashtags={{data-hashtags}}',
-  tumblr: 'https://www.tumblr.com/widgets/share/tool?posttype=photo&title={{data-title}}&caption={{data-description}}&content={{data-image}}&photo-clickthru={{data-url}}'
+	pinterest: 'https://pinterest.com/pin/create/bookmarklet/?|media={{image}}|&url={{url}}|&description={{description}}',
+	facebook: 'http://www.facebook.com/sharer.php?|u={{url}}',
+  twitter: 'https://twitter.com/share?|url={{url}}|&text={{description}}|&via={{via}}|&hashtags={{hashtags}}',
+  tumblr: 'https://www.tumblr.com/widgets/share/tool?posttype=photo&title={{title}}&caption={{description}}&content={{image}}&photo-clickthru={{url}}'
 }
 
 /**
@@ -95,7 +95,8 @@ const parseLocalData = (target, attribute) => {
 
   for (let i = 0; i < attributes.length; i++){
     let attr = attributes[i]
-    attr.name === attribute ? network = attr.value : overrides[attr.name] = attr.value
+    let key = attr.name.split(/data-/)[1] || attr.name 
+    attr.name === attribute ? network = attr.value : overrides[key] = attr.value
   }
 
   return {
@@ -137,21 +138,42 @@ function Sharable(config = {}){
     selector: 'data-social'
   }, config)
 
-  const rawMeta = getMeta();
-  const targets = [].slice.call(document.querySelectorAll(`[${options.selector}]`)) || []
-
-  if (targets.length < 1) return
-
-  for (let i = 0; i < targets.length; i++){
-    let target = targets[i]
-
-    target.onclick = (e) => {
-      e.preventDefault()
-      let {network, overrides} = parseLocalData(target, options.selector)
-      let meta = merge(rawMeta, overrides)
-      let url = createURL(network, meta)
-      openPopup(url)
+  const instance = Object.create({
+    options,
+    update
+  }, {
+    meta: {
+      value: getMeta(),
+      writable: true
     }
+  })
+
+  bindLinks()
+
+  return instance
+
+  function update(){
+    bindLinks()
+    instance.meta = getMeta()
+  }
+
+  function bindLinks(){
+    const targets = [].slice.call(document.querySelectorAll(`[${options.selector}]`)) || []
+
+    if (targets.length < 1) return
+
+    for (let i = 0; i < targets.length; i++){
+      let target = targets[i]
+      let {network, overrides} = parseLocalData(target, options.selector)
+      console.log(overrides)
+      let url = createURL(network, merge(instance.meta, overrides))
+
+      target.addEventListener('click', () => openPopup(url))
+
+      target.removeAttribute(options.selector)
+    }
+
+    return targets
   }
 }
 
