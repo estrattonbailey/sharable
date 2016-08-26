@@ -4,7 +4,7 @@
   "description": "An easily configurable social share libary that uses the social data in your document's head by default.",
   "main": "dist/sharable.js",
   "scripts": {
-    "package": "mkdir browser ; browserify index.js --standalone overunder > browser/overunder.js"
+    "package": "mkdir browser ; browserify index.js --standalone sharable > browser/sharable.js"
   },
   "browserify": {
     "debug": true,
