@@ -5,10 +5,10 @@
  * syntax i.e. {{value}}
  */
 const networks = {
-	pinterest: 'https://pinterest.com/pin/create/bookmarklet/?|media={{image}}|&url={{url}}|&description={{description}}',
-	facebook: 'http://www.facebook.com/sharer.php?|u={{url}}',
-  twitter: 'https://twitter.com/share?|url={{url}}|&text={{description}}|&via={{via}}|&hashtags={{hashtags}}',
-  tumblr: 'https://www.tumblr.com/widgets/share/tool?posttype=photo&title={{title}}&caption={{description}}&content={{image}}&photo-clickthru={{url}}'
+	pinterest: 'https://pinterest.com/pin/create/bookmarklet/?|media={{data-image}}|&url={{data-url}}|&description={{data-description}}',
+	facebook: 'http://www.facebook.com/sharer.php?|u={{data-url}}',
+  twitter: 'https://twitter.com/share?|url={{data-url}}|&text={{data-description}}|&via={{data-via}}|&hashtags={{data-hashtags}}',
+  tumblr: 'https://www.tumblr.com/widgets/share/tool?posttype=photo&title={{data-title}}&caption={{data-description}}&content={{data-image}}&photo-clickthru={{data-url}}'
 }
 
 /**
@@ -20,16 +20,15 @@ const networks = {
  *
  * @return {object} A *new* object with all props of the passed objects
  */
-const merge = (target, source) => {
-  let result = {}
-  let props = Object.keys(target)
-
-  for (let i = 0; i < props.length; i++){
-    let prop = props[i]
-    result[prop] = source[prop] ? source[prop] : target[prop]
+const merge = (target, ...args) => {
+  for (let i = 0; i < args.length; i++){
+    let source = args[i]
+    for (let key in source){
+      if (source[key]) target[key] = source[key]
+    }
   }
 
-  return result
+  return target 
 }
 
 /**
@@ -90,9 +89,14 @@ const getMeta = () => {
  * @return {object} Object with name of network and any optional override values
  */
 const parseLocalData = (target, attribute) => {
-  let raw = target.getAttribute(attribute).split(/\s{1}/)
-  let network = raw[0]
-  let overrides = raw[1] ? JSON.parse(raw[1]) : null 
+  let network
+  let overrides = {}
+  let attributes = Array.prototype.slice.call(target.attributes)
+
+  for (let i = 0; i < attributes.length; i++){
+    let attr = attributes[i]
+    attr.name === attribute ? network = attr.value : overrides[attr.name] = attr.value
+  }
 
   return {
     network,
@@ -109,15 +113,8 @@ const parseLocalData = (target, attribute) => {
 const createURL = (network, meta) => {
   let params = networks[network].split(/\|/)
 
-  const replace = (string, value) => {
-    string.replace(/\{\{.*?\}\}/g, encodeURI(value))
-  }
+  const replace = (string, value) => string.replace(/\{\{.*?\}\}/g, encodeURI(value))
 
-  /**
-   * Iterate over each query parameter 
-   * in URL. If we have data, insert it.
-   * If not, remove the query parameter.
-   */
   for (let i = 1; i < params.length; i++){
     let type = params[i].split(/\{\{|\}\}/g)[1]
 
@@ -140,8 +137,10 @@ function Sharable(config = {}){
     selector: 'data-social'
   }, config)
 
-  const meta = getMeta();
+  const rawMeta = getMeta();
   const targets = [].slice.call(document.querySelectorAll(`[${options.selector}]`)) || []
+
+  if (targets.length < 1) return
 
   for (let i = 0; i < targets.length; i++){
     let target = targets[i]
@@ -149,7 +148,7 @@ function Sharable(config = {}){
     target.onclick = (e) => {
       e.preventDefault()
       let {network, overrides} = parseLocalData(target, options.selector)
-      let meta = merge(data, overrides)
+      let meta = merge(rawMeta, overrides)
       let url = createURL(network, meta)
       openPopup(url)
     }
@@ -157,4 +156,3 @@ function Sharable(config = {}){
 }
 
 export default Sharable
-
