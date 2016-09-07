@@ -1,41 +1,23 @@
-/**
- * Social networks. 
- * Query parameters are separated by '|',
- * values are templated using double-bracket
- * syntax i.e. {{value}}
- */
 const networks = {
-	pinterest: 'https://pinterest.com/pin/create/bookmarklet/?|media={{image}}|&url={{url}}|&description={{description}}',
-	facebook: 'http://www.facebook.com/sharer.php?|u={{url}}',
-  twitter: 'https://twitter.com/share?|url={{url}}|&text={{description}}|&via={{via}}|&hashtags={{hashtags}}',
-  tumblr: 'https://www.tumblr.com/widgets/share/tool?posttype=photo&title={{title}}&caption={{description}}&content={{image}}&photo-clickthru={{url}}'
+  pinterest: ({image = '', url = '', description = ''}) => (
+    `https://pinterest.com/pin/create/bookmarklet/?media=${image}&url=${url}&description=${description}`
+  ),
+  facebook: ({url = ''}) => (
+    `http://www.facebook.com/sharer.php?u=${url}`
+  ),
+  twitter: ({url = '', description = '', via = null, hashtags = ''}) => (
+    `https://twitter.com/share?url=${url}&text=${description}${via ? `&via=${via}` : ''}${hashtags ? `&hashtags=${hashtags}` : ''}`
+  ),
+  tumblr: ({ url = '', title = '', description = '', image = '' }) => (
+    `https://www.tumblr.com/widgets/share/tool?posttype=photo&title=${title}&caption=${description}&content=${image}&photo-clickthru=${url}`
+  )
 }
 
-/**
- * Merge two objects into a 
- * new object
- *
- * @param {object} target Root object
- * @param {object} source Object to merge 
- *
- * @return {object} A *new* object with all props of the passed objects
- */
 const merge = (target, ...args) => {
-  for (let i = 0; i < args.length; i++){
-    let source = args[i]
-    for (let key in source){
-      if (source[key]) target[key] = source[key]
-    }
-  }
-
-  return target 
+  args.forEach(a => Object.keys(a).forEach(k => target[k] = a[k]))
+  return target
 }
 
-/**
- * Open a popup
- *
- * @param {string} url Url to open
- */
 const openPopup = (url) => {
   let width = 500
   let height = 300
@@ -45,15 +27,9 @@ const openPopup = (url) => {
   window.open(url,'','menubar=no,toolbar=no,resizable=yes,scrollbars=yes,width='+width+',height='+height+',top='+top+',left='+left)
 }
 
-/**
- * Parse metadata from meta tags in head
- *
- * @return {object} Meta data as a js object
- */
 const getMeta = () => {
   let meta = {}
-  let head = document.head
-  let metaTags = [].slice.call(head.getElementsByTagName('meta'))
+  let metaTags = [].slice.call(document.head.getElementsByTagName('meta'))
 
   for (let i = 0; i < metaTags.length; i++){
     let attributes = [].slice.call(metaTags[i].attributes);
@@ -68,7 +44,7 @@ const getMeta = () => {
         let property = attr.value.split(/\:/)[1];
         let selector = `[${attr.nodeName}="${attr.value}"]`
 
-        let propertyValue = head.querySelector(selector).getAttribute('content') || false
+        let propertyValue = document.head.querySelector(selector).getAttribute('content') || false
 
         if (propertyValue) meta[property] = propertyValue
       }
@@ -103,31 +79,6 @@ const parseLocalData = (target, attribute) => {
     network,
     overrides
   }
-}
-
-/**
- * @param {string} network Name of social network
- * @param {object} meta Obj containing all necessary meta data from locals and head
- *
- * @return {string} The complete URL based on the template
- */
-const createURL = (network, meta) => {
-  let params = networks[network].split(/\|/)
-
-  const replace = (string, value) => string.replace(/\{\{.*?\}\}/g, encodeURI(value))
-
-  for (let i = 1; i < params.length; i++){
-    let type = params[i].split(/\{\{|\}\}/g)[1]
-
-    if (meta[type]){
-      params[i] = replace(params[i], meta[type])
-    } else {
-      params.splice(i, 1);
-      i = i-1; // reset i
-    }
-  }
-
-  return params.join('');
 }
 
 /**
@@ -171,19 +122,20 @@ function Sharable(config = {}){
   function bindLinks(){
     const targets = [].slice.call(document.querySelectorAll(`[${options.selector}]`)) || []
 
-    if (targets.length < 1) return
-
     for (let i = 0; i < targets.length; i++){
       let target = targets[i]
       let {network, overrides} = parseLocalData(target, options.selector)
-      let url = createURL(network, merge(instance.meta, overrides))
+      let meta = merge(instance.meta, overrides)
+      let url = networks[network](meta)
 
-      target.addEventListener('click', () => openPopup(url))
+      target.addEventListener('click', (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        openPopup(url)
+      })
 
       target.removeAttribute(options.selector)
     }
-
-    return targets
   }
 }
 
