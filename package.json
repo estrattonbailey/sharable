@@ -42,5 +42,8 @@
     "browserify": "^13.0.1",
     "minifyify": "^7.3.3",
     "watchify": "^3.7.0"
+  },
+  "dependencies": {
+    "meta-to-object": "0.0.1"
   }
 }

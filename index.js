@@ -1,3 +1,5 @@
+import scrape from 'meta-to-object'
+
 const networks = {
   pinterest: ({image = '', url = '', description = ''}) => (
     `https://pinterest.com/pin/create/bookmarklet/?media=${image}&url=${url}&description=${description}`
@@ -25,33 +27,6 @@ const openPopup = (url) => {
   let top = (screen.height / 3) - (height / 2)
 
   window.open(url,'','menubar=no,toolbar=no,resizable=yes,scrollbars=yes,width='+width+',height='+height+',top='+top+',left='+left)
-}
-
-const getMeta = () => {
-  let meta = {}
-  let metaTags = [].slice.call(document.head.getElementsByTagName('meta'))
-
-  for (let i = 0; i < metaTags.length; i++){
-    let attributes = [].slice.call(metaTags[i].attributes);
-
-    for (let a = 0; a < attributes.length; a++){
-      let attr = attributes[a]
-
-      /** 
-       * If a Twitter or Open Graph tag 
-       */
-      if (attr.nodeName.match(/name|property/) && attr.value.match(/twitter|og/)){
-        let property = attr.value.split(/\:/)[1];
-        let selector = `[${attr.nodeName}="${attr.value}"]`
-
-        let propertyValue = document.head.querySelector(selector).getAttribute('content') || false
-
-        if (propertyValue) meta[property] = propertyValue
-      }
-    }
-  }
-
-  return meta;
 }
 
 /**
@@ -94,7 +69,7 @@ function Sharable(config = {}){
     update
   }, {
     meta: {
-      value: getMeta(),
+      value: scrape({ name: /property|name/, value: /og|twitter/ }),
       writable: true
     }
   })
@@ -112,7 +87,7 @@ function Sharable(config = {}){
    */
   function update(){
     bindLinks()
-    instance.meta = getMeta()
+    instance.meta = scrape({ name: /property|name/, value: /og|twitter/ })
   }
 
   /**
