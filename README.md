@@ -1,5 +1,7 @@
-# Sharable (WIP, not working rn) [![npm](https://img.shields.io/npm/v/sharable.svg?maxAge=2592000)](https://www.npmjs.com/package/sharable)
+# Sharable [![npm](https://img.shields.io/npm/v/sharable.svg?maxAge=2592000)](https://www.npmjs.com/package/sharable)
 An easily configurable social share libary that uses the social data in your document's `head` by default.
+
+**1.6kb gzipped**
 
 ## Install 
 ```bash
@@ -8,7 +10,6 @@ npm i sharable --save
 
 ## Usage 
 Add social data to your `head` as normal.
-
 ```html
 <html>
 <head>
@@ -36,11 +37,24 @@ Add social data to your `head` as normal.
 ```javascript
 import sharable from 'sharable'
 
-const share = sharable({ selector: 'data-social' })
+const share = sharable()
+
+// ES5
+var sharable = require('sharable/browser')
+var share = sharable()
 ```
 
 ## Options 
-You can optionally pass extra data to individual links via data attributes to override the default data from the `head`.
+#### options.selector
+Change the **attribute** you want to bind with Sharable. Default: `data-social`.
+```javascript
+const share = sharable({ 
+  selector: 'data-social-link'
+})
+```
+
+#### locals 
+You can also pass data to individual links via data attributes to override the default data from the `head`.
 ```html
 <a href="#0" 
   data-social="tumblr"
@@ -51,11 +65,40 @@ You can optionally pass extra data to individual links via data attributes to ov
 </a>
 ```
 
+## Supported Networks and Attributes
+
+#### Twitter
+- `data-url` 
+- `data-description`
+- `data-hashtags` - comma separated list
+- `data-via` - appends `via @handle` to the end of the tweet
+
+#### Facebook 
+- `data-url` 
+
+#### Tumblr 
+- `data-url` 
+- `data-title` 
+- `data-description` 
+- `data-image` 
+
+#### Pinterest
+- `data-url`
+- `data-image`
+- `data-description`
+
 ## API
+
 #### sharable.update()
 Binds any new links and fetches fresh meta data from the `head`.
 ```javascript
 share.update()
+```
+
+#### sharable.getMeta()
+Scrape the `document.head` for all social related meta tags. Returns an object with the shape `propertyName: propertyValue` i.e. `image: 'https://urltomyawesomeimage/image.jpg'`.
+```javascript
+share.getMeta()
 ```
 
 ## TODO
