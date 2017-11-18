@@ -3,12 +3,12 @@ An easily configurable social share libary that uses the social data in your doc
 
 **1.6kb gzipped**
 
-## Install 
+## Install
 ```bash
 npm i sharable --save
 ```
 
-## Usage 
+## Usage
 Add social data to your `head` as normal.
 ```html
 <html>
@@ -29,6 +29,7 @@ Add social data to your `head` as normal.
   <a href="#0" data-social="twitter">Twitter</a>
   <a href="#0" data-social="facebook">Facebook</a>
   <a href="#0" data-social="pinterest">Pinterest</a>
+  <a href="#0" data-social="email">Email</a>
   <a href="#0" data-social="tumblr">Tumblr</a>
 
 </body>
@@ -44,19 +45,19 @@ var sharable = require('sharable/browser')
 var share = sharable()
 ```
 
-## Options 
+## Options
 #### options.selector
 Change the **attribute** you want to bind with Sharable. Default: `data-social`.
 ```javascript
-const share = sharable({ 
+const share = sharable({
   selector: 'data-social-link'
 })
 ```
 
-#### locals 
+#### locals
 You can also pass data to individual links via data attributes to override the default data from the `head`.
 ```html
-<a href="#0" 
+<a href="#0"
   data-social="tumblr"
   data-description="Description for the tumblr post."
   data-url="http://estrattonbailey.tumblr.com"
@@ -68,24 +69,28 @@ You can also pass data to individual links via data attributes to override the d
 ## Supported Networks and Attributes
 
 #### Twitter
-- `data-url` 
+- `data-url`
 - `data-description`
 - `data-hashtags` - comma separated list
 - `data-via` - appends `via @handle` to the end of the tweet
 
-#### Facebook 
-- `data-url` 
+#### Facebook
+- `data-url`
 
-#### Tumblr 
-- `data-url` 
-- `data-title` 
-- `data-description` 
-- `data-image` 
+#### Tumblr
+- `data-url`
+- `data-title`
+- `data-description`
+- `data-image`
 
 #### Pinterest
 - `data-url`
 - `data-image`
 - `data-description`
+
+#### Email
+- `data-url`
+- `data-title`
 
 ## API
 
