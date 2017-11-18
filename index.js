@@ -25,7 +25,7 @@ const networks = {
     `https://twitter.com/share?url=${ url }&text=${ enc(description) }${ via ? `&via=${via}` : '' }${ hashtags ? `&hashtags=${enc(hashtags)}` : '' }`
   ),
   email: ({ url, title }) => (
-    `mailto:?subject=${ title }&body=${url}`
+    `mailto:?subject=${ title }&body=${ url }`
   ),
   tumblr: ({ url, title, description, image }) => (
     `https://www.tumblr.com/widgets/share/tool?posttype=photo&title=${ enc(title) }&caption=${ enc(description) }&content=${ image }&photo-clickthru=${ url }`
