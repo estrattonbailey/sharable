@@ -48,6 +48,11 @@ var networks = {
     var hashtags = _ref3.hashtags;
     return 'https://twitter.com/share?url=' + url + '&text=' + enc(description) + (via ? '&via=' + via : '') + (hashtags ? '&hashtags=' + enc(hashtags) : '');
   },
+  email: function email(_ref3) {
+    var url = _ref3.url;
+    var title = _ref3.title;
+    return 'mailto?subject=' + title + '&body=' + url;
+  },
   tumblr: function tumblr(_ref4) {
     var url = _ref4.url;
     var title = _ref4.title;
@@ -88,8 +93,8 @@ var getMeta = function getMeta() {
  * Get names and values of all data-*
  * attributes on the share link
  *
- * @param {object} target The DOM node representing the social ink 
- * @return {object} 
+ * @param {object} target The DOM node representing the social ink
+ * @return {object}
  */
 var parseLocalData = function parseLocalData(target) {
   return Array.prototype.slice.call(target.attributes).reduce(function (prev, curr) {

@@ -24,6 +24,9 @@ const networks = {
   twitter: ({ url, description, via, hashtags }) => (
     `https://twitter.com/share?url=${ url }&text=${ enc(description) }${ via ? `&via=${via}` : '' }${ hashtags ? `&hashtags=${enc(hashtags)}` : '' }`
   ),
+  email: ({ url, title }) => (
+    `mailto:?subject=${ title }&body=${ url }`
+  ),
   tumblr: ({ url, title, description, image }) => (
     `https://www.tumblr.com/widgets/share/tool?posttype=photo&title=${ enc(title) }&caption=${ enc(description) }&content=${ image }&photo-clickthru=${ url }`
   )
@@ -60,8 +63,8 @@ const getMeta = () => {
  * Get names and values of all data-*
  * attributes on the share link
  *
- * @param {object} target The DOM node representing the social ink 
- * @return {object} 
+ * @param {object} target The DOM node representing the social ink
+ * @return {object}
  */
 const parseLocalData = target => Array.prototype.slice.call(target.attributes).reduce((prev, curr) => {
   /data-/.test(curr.name) ? prev[curr.name.split(/data-/)[1]] = curr.value : null
@@ -74,7 +77,7 @@ export default (options = {}) => {
   let meta = getMeta()
 
   const update = () => {
-    meta = getMeta() 
+    meta = getMeta()
     bindLinks()
   }
 
